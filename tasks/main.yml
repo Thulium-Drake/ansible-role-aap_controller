@@ -1,0 +1,232 @@
+---
+# yamllint disable rule:line-length
+- name: 'Upload or refresh manifest to Automation Controller'
+  when: aap_controller_rh_subscription_manifest | length > 0
+  block:
+    - name: 'Copy manifest to server'
+      ansible.builtin.copy:
+        src: "{{ aap_controller_rh_subscription_manifest }}"
+        dest: '/root/aap-manifest.zip'
+        mode: '0600'
+      register: 'aap_controller_upload_subscriptions'
+
+    - name: 'Upload manifest'
+      awx.awx.license:
+        controller_username: "{{ aap_controller_admin_user }}"
+        controller_password: "{{ aap_controller_admin_password }}"
+        controller_host: "{{ aap_controller_host }}"
+        validate_certs: "{{ aap_controller_validate_certs }}"
+        manifest: '/root/aap-manifest.zip'
+        force: true
+      when: aap_controller_rh_subscription_force_manifest_refresh or aap_controller_upload_subscriptions['changed']
+
+- name: 'Configure subscription with Pool ID'
+  when: aap_controller_rh_subscription_pool_id | length > 0
+  block:
+    - name: 'Refresh manifest'
+      awx.awx.license:
+        controller_username: "{{ aap_controller_admin_user }}"
+        controller_password: "{{ aap_controller_admin_password }}"
+        controller_host: "{{ aap_controller_host }}"
+        validate_certs: "{{ aap_controller_validate_certs }}"
+        pool_id: "{{ aap_controller_rh_subscription_pool_id }}"
+        force: "{{ aap_controller_rh_subscription_force_manifest_refresh }}"
+
+- name: 'Ensure Organizations'
+  awx.awx.organization:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ organization['name'] }}"
+    description: "{{ organization['description'] }}"
+    default_environment: "{{ organization['default_environment'] | default(omit) }}"
+    galaxy_credentials: "{{ organization['galaxy_credentials'] | default(omit) }}"
+    instance_groups: "{{ organization['instance_groups'] | default(omit) }}"
+    max_hosts: "{{ organization['max_hosts'] | default(omit) }}"
+    notification_templates_approvals: "{{ organization['notification_templates_approvals'] | default(omit) }}"
+    notification_templates_error: "{{ organization['notification_templates_error'] | default(omit) }}"
+    notification_templates_started: "{{ organization['notification_templates_started'] | default(omit) }}"
+    notification_templates_success: "{{ organization['notification_templates_success'] | default(omit) }}"
+  loop: "{{ aap_controller_organizations }}"
+  loop_control:
+    loop_var: 'organization'
+
+- name: 'Ensure Settings'
+  when: aap_controller_settings | length > 0
+  awx.awx.settings:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    settings: "{{ aap_controller_settings }}"
+  no_log: "{{ not aap_controller_debug }}"
+
+- name: 'Ensure Credentials'
+  awx.awx.credential:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ credential['name'] }}"
+    credential_type: "{{ credential['type'] }}"
+    organization: "{{ credential['organization'] }}"
+    inputs: "{{ credential['data'] }}"
+    state: 'present'
+  loop: "{{ aap_controller_credentials }}"
+  loop_control:
+    loop_var: 'credential'
+  no_log: "{{ not aap_controller_debug }}"
+
+- name: 'Ensure projects'
+  awx.awx.project:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ project['name'] }}"
+    description: "{{ project['description'] }}"
+    organization: "{{ project['organization'] }}"
+    scm_credential: "{{ project['scm_credential'] }}"
+    scm_type: "{{ project['scm_type'] }}"
+    scm_clean: "{{ project['scm_clean'] | default(omit) }}"
+    scm_delete_on_update: "{{ project['scm_delete_on_update'] | default(omit) }}"
+    scm_track_submodules: "{{ project['scm_track_submodules'] | default(omit) }}"
+    scm_update_cache_timeout: "{{ project['scm_update_cache_timeout'] | default(omit) }}"
+    scm_update_on_launch: "{{ project['scm_update_on_launch'] | default(omit) }}"
+    scm_url: "{{ project['scm_url'] | default(omit) }}"
+    scm_refspec: "{{ project['scm_refspec'] | default(omit) }}"
+    scm_branch: "{{ project['scm_branch'] | default(omit) }}"
+    state: 'present'
+  loop: "{{ aap_controller_projects }}"
+  loop_control:
+    loop_var: 'project'
+
+- name: 'Ensure projects updated from SCM'
+  awx.awx.project_update:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ project['name'] }}"
+    organization: "{{ project['organization'] }}"
+    wait: true
+  loop: "{{ aap_controller_projects }}"
+  loop_control:
+    loop_var: 'project'
+
+- name: 'Ensure Inventories'
+  awx.awx.inventory:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ inventory['name'] }}"
+    description: "{{ inventory['description'] | default(omit) }}"
+    host_filter: "{{ inventory['host_filter'] | default(omit) }}"
+    input_inventories: "{{ inventory['input_inventories'] | default(omit) }}"
+    instance_groups: "{{ inventory['instance_groups'] | default(omit) }}"
+    kind: "{{ inventory['kind'] | default(omit) }}"
+    organization: "{{ inventory['organization'] }}"
+    prevent_instance_group_fallback: "{{ inventory['prevent_instance_group_fallback'] | default(omit) }}"
+    variables: "{{ inventory['variables'] | default(omit) }}"
+    state: 'present'
+  loop: "{{ aap_controller_inventories }}"
+  loop_control:
+    loop_var: 'inventory'
+
+- name: 'Ensure Inventory sources'
+  awx.awx.inventory_source:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ (inventory_source[0]['kind'] | default('') == 'constructed') | ternary('Auto-created source for: ' + inventory_source[0]['name'], inventory_source[1]['name']) }}"
+    credential: "{{ inventory_source[1]['credential'] | default(omit) }}"
+    description: "{{ inventory_source[1]['description'] | default(omit) }}"
+    enabled_value: "{{ inventory_source[1]['enabled_value'] | default(omit) }}"
+    enabled_var: "{{ inventory_source[1]['enabled_var'] | default(omit) }}"
+    execution_environment: "{{ inventory_source[1]['execution_environment'] | default(omit) }}"
+    host_filter: "{{ inventory_source[1]['host_filter'] | default(omit) }}"
+    inventory: "{{ inventory_source[0]['name'] | default(omit) }}"
+    limit: "{{ inventory_source[1]['limit'] | default(omit) }}"
+    notification_templates_error: "{{ inventory_source[1]['notification_templates_error'] | default(omit) }}"
+    notification_templates_started: "{{ inventory_source[1]['notification_templates_started'] | default(omit) }}"
+    notification_templates_success: "{{ inventory_source[1]['notification_templates_success'] | default(omit) }}"
+    organization: "{{ inventory_source[0]['organization'] | default(omit) }}"
+    overwrite: "{{ inventory_source[1]['overwrite'] | default(omit) }}"
+    overwrite_vars: "{{ inventory_source[1]['overwrite_vars'] | default(omit) }}"
+    scm_branch: "{{ inventory_source[1]['scm_branch'] | default(omit) }}"
+    source: "{{ inventory_source[1]['source'] | default(omit) }}"
+    source_path: "{{ inventory_source[1]['source_path'] | default(omit) }}"
+    source_project: "{{ inventory_source[1]['source_project'] | default(omit) }}"
+    source_vars: "{{ inventory_source[1]['source_vars'] | default(omit) }}"
+    timeout: "{{ inventory_source[1]['timeout'] | default(omit) }}"
+    update_cache_timeout: "{{ inventory_source[1]['update_cache_timeout'] | default(omit) }}"
+    update_on_launch: "{{ inventory_source[1]['update_on_launch'] | default(omit) }}"
+  loop: "{{ aap_controller_inventories | subelements('sources', {'skip_missing': true}) }}"
+  loop_control:
+    loop_var: 'inventory_source'
+
+- name: 'Ensure job templates'
+  awx.awx.job_template:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ job['name'] }}"
+    allow_simultaneous: "{{ job['allow_simultaneous'] | default(omit) }}"
+    ask_credential_on_launch: "{{ job['ask_credential_on_launch'] | default(omit) }}"
+    ask_diff_mode_on_launch: "{{ job['ask_diff_mode_on_launch'] | default(omit) }}"
+    ask_execution_environment_on_launch: "{{ job['ask_execution_environment_on_launch'] | default(omit) }}"
+    ask_forks_on_launch: "{{ job['ask_forks_on_launch'] | default(omit) }}"
+    ask_instance_groups_on_launch: "{{ job['ask_instance_groups_on_launch'] | default(omit) }}"
+    ask_inventory_on_launch: "{{ job['ask_inventory_on_launch'] | default(omit) }}"
+    ask_job_slice_count_on_launch: "{{ job['ask_job_slice_count_on_launch'] | default(omit) }}"
+    ask_job_type_on_launch: "{{ job['ask_job_type_on_launch'] | default(omit) }}"
+    ask_labels_on_launch: "{{ job['ask_labels_on_launch'] | default(omit) }}"
+    ask_limit_on_launch: "{{ job['ask_limit_on_launch'] | default(omit) }}"
+    ask_scm_branch_on_launch: "{{ job['ask_scm_branch_on_launch'] | default(omit) }}"
+    ask_skip_tags_on_launch: "{{ job['ask_skip_tags_on_launch'] | default(omit) }}"
+    ask_tags_on_launch: "{{ job['ask_tags_on_launch'] | default(omit) }}"
+    ask_timeout_on_launch: "{{ job['ask_timeout_on_launch'] | default(omit) }}"
+    ask_variables_on_launch: "{{ job['ask_variables_on_launch'] | default(omit) }}"
+    ask_verbosity_on_launch: "{{ job['ask_verbosity_on_launch'] | default(omit) }}"
+    become_enabled: "{{ job['become_enabled'] | default(omit) }}"
+    credentials: "{{ job['credentials'] | default(omit) }}"
+    description: "{{ job['description'] | default(omit) }}"
+    diff_mode: "{{ job['diff_mode'] | default(omit) }}"
+    execution_environment: "{{ job['execution_environment'] | default(omit) }}"
+    extra_vars: "{{ job['extra_vars'] | default(omit) }}"
+    force_handlers: "{{ job['force_handlers'] | default(omit) }}"
+    forks: "{{ job['forks'] | default(omit) }}"
+    host_config_key: "{{ job['host_config_key'] | default(omit) }}"
+    instance_groups: "{{ job['instance_groups'] | default(omit) }}"
+    inventory: "{{ job['inventory'] | default(omit) }}"
+    job_slice_count: "{{ job['job_slice_count'] | default(omit) }}"
+    job_tags: "{{ job['job_tags'] | default(omit) }}"
+    job_type: "{{ job['job_type'] | default(omit) }}"
+    labels: "{{ job['labels'] | default(omit) }}"
+    limit: "{{ job['limit'] | default(omit) }}"
+    notification_templates_error: "{{ job['notification_templates_error'] | default(omit) }}"
+    notification_templates_started: "{{ job['notification_templates_started'] | default(omit) }}"
+    notification_templates_success: "{{ job['notification_templates_success'] | default(omit) }}"
+    organization: "{{ job['organization'] | default(omit) }}"
+    playbook: "{{ job['playbook'] | default(omit) }}"
+    prevent_instance_group_fallback: "{{ job['prevent_instance_group_fallback'] | default(omit) }}"
+    project: "{{ job['project'] | default(omit) }}"
+    scm_branch: "{{ job['scm_branch'] | default(omit) }}"
+    skip_tags: "{{ job['skip_tags'] | default(omit) }}"
+    start_at_task: "{{ job['start_at_task'] | default(omit) }}"
+    survey_enabled: "{{ job['survey_enabled'] | default(omit) }}"
+    survey_spec: "{{ job['survey_spec'] | default(omit) }}"
+    timeout: "{{ job['timeout'] | default(omit) }}"
+    use_fact_cache: "{{ job['use_fact_cache'] | default(omit) }}"
+    vault_credential: "{{ job['vault_credential'] | default(omit) }}"
+    verbosity: "{{ job['verbosity'] | default(omit) }}"
+    webhook_credential: "{{ job['webhook_credential'] | default(omit) }}"
+    webhook_service: "{{ job['webhook_service'] | default(omit) }}"
+    state: "{{ job['state'] | default('present') }}"
+  loop: "{{ aap_controller_job_templates }}"
+  loop_control:
+    loop_var: 'job'

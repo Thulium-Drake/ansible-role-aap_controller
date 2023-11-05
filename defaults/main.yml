@@ -1,0 +1,94 @@
+---
+# AAP controller login credentials
+aap_controller_admin_user: 'admin'
+aap_controller_admin_password: 'AutomateTheGalaxyAndBeyond!'
+aap_controller_host: 'localhost'
+aap_controller_validate_certs: true
+
+# Path to the Red Hat Subscription Manifest
+aap_controller_rh_subscription_manifest: ''
+# OR the Pool ID where to attach a subscription from
+aap_controller_rh_subscription_pool_id: ''
+# Force refresh the subscription manifest
+aap_controller_rh_subscription_force_manifest_refresh: false
+
+# This dict contains the settings as provided by the AAP Controller API
+# You can find them at https://<controller>/api/v2/settings
+aap_controller_settings: {}
+
+# Organizations to configure
+# NOTE: some configuration for organization members can be done in
+# the authentication settings above, for example, which users have
+# access to it and which users are considered admin
+#
+# For a full list of options, please see the awx.awx.organization documentation
+#
+# - name: 'Example'
+#   description: 'Org for Example Inc'
+aap_controller_organizations: []
+
+# Credentials to configure
+# - name: 'Example-GitDeployKey'
+#   type: 'Source Control'
+#   organization: 'RH-Lab'
+#   data:
+#     username: 'ansible'
+#     password: ''
+#     ssh_key_data: "{{ lookup('file', 'files/my_ssh_key') }}"
+#     ssh_key_unlock: 'SomeP@s$W0rD!'
+#
+# For a full list of options, please see the awx.awx.credentials documentation
+aap_controller_credentials: []
+
+# Projects to configure
+# - name: 'Example-Infra'
+#   description: 'Ansible project for Example infrastructure'
+#   organization: 'Example'
+#   scm_type: 'git'
+#   scm_url: 'ssh://git.example.nl/stuff/ansible.git'
+#   scm_delete_on_update: true
+#   scm_credential: 'Example-GitDeployKey'
+#
+# For a full list of options, please see the awx.awx.project documentation
+aap_controller_projects: []
+
+# Inventories to configure
+# aap_controller_inventories:
+#   - name: 'Hosts'
+#     description: 'Host sources for Example'
+#     organization: 'Example'
+#     sources:
+#       - name: '01_infrastructure'
+#         source: 'scm'
+#         source_path: 'inventory/01_infrastructure'
+#         source_project: 'Infra'
+#         overwrite: true
+#         overwrite_vars: true
+#         update_on_launch: true
+#   - name: 'Default'
+#     description: 'Default inventory for Example'
+#     organization: 'Example'
+#     kind: 'constructed'
+#     input_inventories:
+#       - 'Hosts'
+#     sources:
+#       - source_vars: "{{ lookup('file', inventory_dir + '/constructed.yml') | from_yaml }}"
+#
+# For a full list of options, please see the awx.awx.inventory and inventory_source documentation
+aap_controller_inventories: []
+
+# Job templates to create
+# - name: 'Example Job'
+#   job_type: 'run'
+#   organization: 'Example'
+#   inventory: 'Local'
+#   project: 'Example-Infra'
+#   playbook: 'ping.yml'
+#   credentials:
+#     - 'Example-RunKey'
+#
+# For a full list of options, please see the awx.awx.project documentation
+aap_controller_job_templates: []
+
+# Set to true to enable logging of tasks with sensitive information
+aap_controller_debug: false
