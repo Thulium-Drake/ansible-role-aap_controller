@@ -5,6 +5,8 @@ aap_controller_admin_password: 'AutomateTheGalaxyAndBeyond!'
 aap_controller_host: 'localhost'
 aap_controller_validate_certs: true
 
+aap_controller_timezone: 'Europe/Amsterdam'
+
 # Path to the Red Hat Subscription Manifest
 aap_controller_rh_subscription_manifest: ''
 # OR the Pool ID where to attach a subscription from
