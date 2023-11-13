@@ -297,7 +297,7 @@
     scm_branch: "{{ schedule[0]['scm_branch'] | default(omit) }}"
     skip_tags: "{{ schedule[0]['skip_tags'] | default(omit) }}"
     timeout: "{{ schedule[0]['timeout'] | default(omit) }}"
-    unified_job_template: "{{ schedule[1]['unified_job_template'] | default(omit) }}"
+    unified_job_template: "{{ schedule[0]['name'] | default(omit) }}"
     verbosity: "{{ schedule[0]['verbosity'] | default(omit) }}"
   loop: "{{ aap_controller_job_templates | subelements('schedules', {'skip_missing': true}) }}"
   loop_control:
