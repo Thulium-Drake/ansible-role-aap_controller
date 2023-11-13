@@ -79,18 +79,44 @@ aap_controller_projects: []
 # For a full list of options, please see the awx.awx.inventory and inventory_source documentation
 aap_controller_inventories: []
 
-# Job templates to create
+# Job templates to create, has support for simple schedules with the 'schedules key'
 # - name: 'Example Job'
 #   job_type: 'run'
 #   organization: 'Example'
 #   inventory: 'Local'
 #   project: 'Example-Infra'
 #   playbook: 'ping.yml'
+#   schedules:
+#     - type: 'hour'
+#       frequency: '3'
+#       description: 'Repeat every 3 hours'
 #   credentials:
 #     - 'Example-RunKey'
 #
 # For a full list of options, please see the awx.awx.project documentation
 aap_controller_job_templates: []
+
+# Workflow templates to create, has support for simple schedules with the 'schedules key'
+# - name: 'Example Workflow'
+#   organization: 'Example'
+#   schedules:
+#     - type: 'minute'
+#       frequency: '5'
+#       description: 'Repeat every 5 minutes'
+#   workflow_nodes:
+#     - identifier: 'update-inventory'
+#         unified_job_template:
+#         name: '01_infrastructure'
+#         inventory:
+#           organization:
+#             name: 'Example'
+#         type: 'inventory_source'
+#       related:
+#         success_nodes:
+#           - identifier: 'not-included-in-example'
+#     - identifier: 'not-included-in-example'
+# For a full list of options, please see the awx.awx.project documentation
+aap_controller_workflow_templates: []
 
 # Set to true to enable logging of tasks with sensitive information
 aap_controller_debug: false
