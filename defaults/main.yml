@@ -54,6 +54,13 @@ aap_controller_credentials: []
 # For a full list of options, please see the awx.awx.project documentation
 aap_controller_projects: []
 
+# Execution Environments to configure
+# - name: 'My EE'
+#   image: 'quay.io/ansible/awx-ee'
+#
+# For a full list of options, please see the awx.awx.execution_environment documentation
+aap_controller_execution_environments: []
+
 # Inventories to configure
 # aap_controller_inventories:
 #   - name: 'Hosts'

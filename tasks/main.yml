@@ -115,6 +115,22 @@
   loop_control:
     loop_var: 'project'
 
+- name: 'Ensure Execution Environments'
+  awx.awx.execution_environment:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ ee['name'] }}"
+    credential: "{{ ee['credential'] | default(omit) }}"
+    description: "{{ ee['description'] | default(omit) }}"
+    image: "{{ ee['image'] }}"
+    organization: "{{ ee['organization'] | default(omit) }}"
+    pull: "{{ ee['pull'] | default(omit) }}"
+  loop: "{{ aap_controller_execution_environments }}"
+  loop_control:
+    loop_var: 'ee'
+
 - name: 'Ensure Inventories'
   awx.awx.inventory:
     controller_username: "{{ aap_controller_admin_user }}"
