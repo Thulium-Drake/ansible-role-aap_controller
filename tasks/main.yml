@@ -270,67 +270,16 @@
   loop_control:
     loop_var: 'workflow'
 
-# NOTE: make this DRY by including tasks twice (once for jobs and once for workflows)
 - name: 'Ensure job schedules'
-  awx.awx.schedule:
-    controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
-    controller_host: "{{ aap_controller_host }}"
-    validate_certs: "{{ aap_controller_validate_certs }}"
-    name: "Schedule {{ schedule[0]['name'] }}"
-    description: "{{ schedule[1]['description'] }}"
-    organization: "{{ schedule[0]['organization'] }}"
-    credentials: "{{ schedule[0]['credentials'] | default(omit) }}"
-    diff_mode: "{{ schedule[0]['diff_mode'] | default(omit) }}"
-    enabled: "{{ schedule[1]['enabled'] | default(omit) }}"
-    execution_environment: "{{ schedule[0]['execution_environment'] | default(omit) }}"
-    extra_data: "{{ schedule[0]['extra_data'] | default(omit) }}"
-    forks: "{{ schedule[0]['forks'] | default(omit) }}"
-    instance_groups: "{{ schedule[0]['instance_groups'] | default(omit) }}"
-    inventory: "{{ schedule[0]['inventory'] | default(omit) }}"
-    job_slice_count: "{{ schedule[0]['job_slice_count'] | default(omit) }}"
-    job_tags: "{{ schedule[0]['job_tags'] | default(omit) }}"
-    job_type: "{{ schedule[0]['job_type'] | default(omit) }}"
-    labels: "{{ schedule[0]['labels'] | default(omit) }}"
-    limit: "{{ schedule[0]['limit'] | default(omit) }}"
-    rrule: "{{ q('awx.awx.schedule_rrule', schedule[1]['type'], every=schedule[1]['frequency'], timezone=aap_controller_timezone) }}"
-    scm_branch: "{{ schedule[0]['scm_branch'] | default(omit) }}"
-    skip_tags: "{{ schedule[0]['skip_tags'] | default(omit) }}"
-    timeout: "{{ schedule[0]['timeout'] | default(omit) }}"
-    unified_job_template: "{{ schedule[0]['name'] | default(omit) }}"
-    verbosity: "{{ schedule[0]['verbosity'] | default(omit) }}"
+  ansible.builtin.include_tasks:
+    file: 'schedule.yml'
   loop: "{{ aap_controller_job_templates | subelements('schedules', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'schedule'
 
 - name: 'Ensure workflow schedules'
-  awx.awx.schedule:
-    controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
-    controller_host: "{{ aap_controller_host }}"
-    validate_certs: "{{ aap_controller_validate_certs }}"
-    name: "Schedule {{ schedule[0]['name'] }}"
-    description: "{{ schedule[1]['description'] }}"
-    organization: "{{ schedule[0]['organization'] }}"
-    credentials: "{{ schedule[0]['credentials'] | default(omit) }}"
-    diff_mode: "{{ schedule[0]['diff_mode'] | default(omit) }}"
-    enabled: "{{ schedule[1]['enabled'] | default(omit) }}"
-    execution_environment: "{{ schedule[0]['execution_environment'] | default(omit) }}"
-    extra_data: "{{ schedule[0]['extra_data'] | default(omit) }}"
-    forks: "{{ schedule[0]['forks'] | default(omit) }}"
-    instance_groups: "{{ schedule[0]['instance_groups'] | default(omit) }}"
-    inventory: "{{ schedule[0]['inventory'] | default(omit) }}"
-    job_slice_count: "{{ schedule[0]['job_slice_count'] | default(omit) }}"
-    job_tags: "{{ schedule[0]['job_tags'] | default(omit) }}"
-    job_type: "{{ schedule[0]['job_type'] | default(omit) }}"
-    labels: "{{ schedule[0]['labels'] | default(omit) }}"
-    limit: "{{ schedule[0]['limit'] | default(omit) }}"
-    rrule: "{{ q('awx.awx.schedule_rrule', schedule[1]['type'], every=schedule[1]['frequency'], timezone=aap_controller_timezone) }}"
-    scm_branch: "{{ schedule[0]['scm_branch'] | default(omit) }}"
-    skip_tags: "{{ schedule[0]['skip_tags'] | default(omit) }}"
-    timeout: "{{ schedule[0]['timeout'] | default(omit) }}"
-    unified_job_template: "{{ schedule[0]['name'] | default(omit) }}"
-    verbosity: "{{ schedule[0]['verbosity'] | default(omit) }}"
+  ansible.builtin.include_tasks:
+    file: 'schedule.yml'
   loop: "{{ aap_controller_workflow_templates | subelements('schedules', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'schedule'

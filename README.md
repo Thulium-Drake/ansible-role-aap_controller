@@ -6,6 +6,7 @@ This role requires the following in order to work
 
   * 'awx.awx' 23.2.0 or higher
   * A Red Hat subscription manifest with AAP licenses
+  * Administrative access to Automation Platform Controller
 
 Tested with Ansible 2.14 and higher
 
@@ -13,7 +14,8 @@ This role supports Red Hat Automation Controller 4.4.6 and up. Has not been veri
 
 # Scheduling jobs
 Apart from configuring most AAP aspects rather straigthforward, this role supports scheduling
-jobs and workflows with simple schedules (such as every X minutes/hours/etc.)
+jobs and workflows with simple schedules (such as every X minutes/hours/etc.). Please see
+defaults/main.yml for more information.
 
 # Workarounds and/or issues
 For some quirks in AAP you'll need a workaround, this sections describes the ones I needed:
