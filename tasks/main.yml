@@ -70,8 +70,12 @@
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ credential['name'] }}"
     credential_type: "{{ credential['type'] }}"
-    organization: "{{ credential['organization'] }}"
+    description: "{{ credential['description'] | default(omit) }}"
     inputs: "{{ credential['data'] }}"
+    organization: "{{ credential['organization'] }}"
+    team: "{{ credential['team'] | default(omit) }}"
+    user: "{{ credential['user'] | default(omit) }}"
+    update_secrets: "{{ credential['update_secrets'] | default(omit) }}"
     state: 'present'
   loop: "{{ aap_controller_credentials }}"
   loop_control:
@@ -189,6 +193,7 @@
     timeout: "{{ inventory_source[1]['timeout'] | default(omit) }}"
     update_cache_timeout: "{{ inventory_source[1]['update_cache_timeout'] | default(omit) }}"
     update_on_launch: "{{ inventory_source[1]['update_on_launch'] | default(omit) }}"
+    verbosity: "{{ inventory_source[1]['verbosity'] | default(omit) }}"
   loop: "{{ aap_controller_inventories | subelements('sources', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'inventory_source'
