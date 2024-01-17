@@ -1,5 +1,10 @@
 ---
 # yamllint disable rule:line-length
+- name: 'Ensure dependencies'
+  ansible.builtin.package:
+    name: 'python39-pytz'
+    state: 'present'
+
 - name: 'Upload or refresh manifest to Automation Controller'
   when: aap_controller_rh_subscription_manifest | length > 0
   block:
