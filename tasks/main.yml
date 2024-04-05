@@ -49,7 +49,6 @@
     name: "{{ organization['name'] }}"
     description: "{{ organization['description'] }}"
     default_environment: "{{ organization['default_environment'] | default(omit) }}"
-    galaxy_credentials: "{{ organization['galaxy_credentials'] | default(omit) }}"
     instance_groups: "{{ organization['instance_groups'] | default(omit) }}"
     max_hosts: "{{ organization['max_hosts'] | default(omit) }}"
     notification_templates_approvals: "{{ organization['notification_templates_approvals'] | default(omit) }}"
@@ -89,6 +88,18 @@
   loop_control:
     loop_var: 'credential'
   no_log: "{{ not aap_controller_debug }}"
+
+- name: 'Ensure Organization credentials'
+  awx.awx.organization:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ organization['name'] }}"
+    galaxy_credentials: "{{ organization['galaxy_credentials'] | default(omit) }}"
+  loop: "{{ aap_controller_organizations }}"
+  loop_control:
+    loop_var: 'organization'
 
 - name: 'Ensure Execution Environments'
   awx.awx.execution_environment:
