@@ -3,8 +3,8 @@
 - name: 'Ensure dependencies on controller'
   ansible.builtin.package:
     name:
-      - 'python39-dateutil'
-      - 'python39-pytz'
+      - 'python3.12-dateutil'
+      - 'python3.12-pytz'
     state: 'present'
   delegate_to: 'localhost'
 
