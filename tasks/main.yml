@@ -332,3 +332,38 @@
   loop: "{{ aap_controller_workflow_templates | subelements('schedules', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'schedule'
+
+- name: 'Ensure teams'
+  awx.awx.team:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ team['name'] }}"
+    description: "{{ team['description'] }}"
+    organization: "{{ team['organization'] }}"
+    state: 'present'
+  loop: "{{ aap_controller_teams }}"
+  loop_control:
+    loop_var: 'team'
+
+- name: 'Ensure team roles'
+  awx.awx.role:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    credentials: "{{ team_role['credentials'] | default(omit) }}"
+    instance_groups: "{{ team_role['instance_groups'] | default(omit) }}"
+    inventories: "{{ team_role['inventories'] | default(omit) }}"
+    job_templates: "{{ team_role['job_templates'] | default(omit) }}"
+    organizations: "{{ team_role['organizations'] | default(omit) }}"
+    projects: "{{ team_role['project'] | default(omit) }}"
+    role: "{{ team_role['permissions'] }}"
+    teams:
+      - "{{ team_role['name'] | default(omit) }}"
+    workflows: "{{ team_role['workflows'] | default(omit) }}"
+    state: 'present'
+  loop: "{{ aap_controller_teams }}"
+  loop_control:
+    loop_var: 'team_role'

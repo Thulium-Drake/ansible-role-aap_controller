@@ -29,6 +29,25 @@ aap_controller_settings: {}
 #   description: 'Org for Example Inc'
 aap_controller_organizations: []
 
+# Teams permissions to configure
+# - name: 'My-AppTeam'
+#   organization: 'Example'  # Organization this team is a member of
+#   description: 'MyApp administrators'
+#   permissions: 'execute'
+#   workflows:
+#     - 'DeployMyAppWorkflow'
+#   job_templates:
+#     - 'RestartMyApp'
+# - name: 'Organization admin'
+#   organization: 'Example'  # Organization this team is a member of
+#   description: 'Administrators'
+#   permissions: 'admin'
+#   organizations:  # Organizations that this team manages
+#     - 'MyOtherOrg'
+#
+# For a full list of options, please see the awx.awx.role documentation
+aap_controller_teams: []
+
 # Credentials to configure
 # - name: 'Example-GitDeployKey'
 #   type: 'Source Control'
