@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 - name: 'Ensure job schedules'
   awx.awx.schedule:
     controller_username: "{{ aap_controller_admin_user }}"
@@ -8,7 +9,7 @@
     name: "Schedule {{ schedule[0]['name'] }}"
     description: "{{ schedule[1]['description'] }}"
     organization: "{{ schedule[0]['organization'] }}"
-    credentials: "{{ schedule[0]['credentials'] | default(omit) }}"
+    credentials: "{{ schedule[0]['ask_credential_on_launch'] | default(false) | ternary(schedule[0]['credentials'], omit) }}"
     diff_mode: "{{ schedule[0]['diff_mode'] | default(omit) }}"
     enabled: "{{ schedule[1]['enabled'] | default(omit) }}"
     execution_environment: "{{ schedule[0]['execution_environment'] | default(omit) }}"
@@ -21,7 +22,7 @@
     job_type: "{{ schedule[0]['job_type'] | default(omit) }}"
     labels: "{{ schedule[0]['labels'] | default(omit) }}"
     limit: "{{ schedule[0]['limit'] | default(omit) }}"
-    rrule: "{{ q('awx.awx.schedule_rrule', schedule[1]['type'], every=schedule[1]['frequency'], timezone=aap_controller_timezone) }}"
+    rrule: "{{ q('awx.awx.schedule_rrule', schedule[1]['type'], every=schedule[1]['frequency'], start_date=schedule[1]['start_date'], timezone=aap_controller_timezone) }}"
     scm_branch: "{{ schedule[0]['scm_branch'] | default(omit) }}"
     skip_tags: "{{ schedule[0]['skip_tags'] | default(omit) }}"
     timeout: "{{ schedule[0]['timeout'] | default(omit) }}"

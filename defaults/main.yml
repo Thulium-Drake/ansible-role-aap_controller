@@ -106,6 +106,7 @@ aap_controller_execution_environments: []
 aap_controller_inventories: []
 
 # Job templates to create, has support for simple schedules with the 'schedules key'
+# NOTE: when scheduling jobs, start_date is required!
 # - name: 'Example Job'
 #   job_type: 'run'
 #   organization: 'Example'
@@ -115,7 +116,8 @@ aap_controller_inventories: []
 #   schedules:
 #     - type: 'hour'
 #       frequency: '3'
-#       description: 'Repeat every 3 hours'
+#       description: 'Repeat every 3 hours starting at 11:00'
+#       start_date: '2024-01-01 11:00:00'
 #   credentials:
 #     - 'Example-RunKey'
 #
@@ -123,12 +125,14 @@ aap_controller_inventories: []
 aap_controller_job_templates: []
 
 # Workflow templates to create, has support for simple schedules with the 'schedules key'
+# NOTE: when scheduling jobs, start_date is required!
 # - name: 'Example Workflow'
 #   organization: 'Example'
 #   schedules:
 #     - type: 'minute'
 #       frequency: '5'
 #       description: 'Repeat every 5 minutes'
+#       start_date: '2024-01-01 00:00:00'
 #   workflow_nodes:
 #     - identifier: 'update-inventory'
 #         unified_job_template:
