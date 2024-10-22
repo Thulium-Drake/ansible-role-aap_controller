@@ -1,12 +1,34 @@
 ---
 # yamllint disable rule:line-length
-- name: 'Ensure dependencies on controller'
-  ansible.builtin.package:
-    name:
-      - 'python3.12-dateutil'
-      - 'python3.12-pytz'
-    state: 'present'
+- name: 'Collect Ansible Python version'
+  ansible.builtin.shell: |
+    set -o pipefail
+    ansible --version | grep 'python version' | cut -d= -f2 | awk '{print $1}'
+  args:
+    executable: '/bin/bash'
   delegate_to: 'localhost'
+  register: 'aap_controller_python_version_raw'
+  changed_when: false
+
+- name: 'Generate variables with Python version'
+  ansible.builtin.set_fact:
+    aap_controller_python_version_list: "{{ aap_controller_python_version_raw['stdout'] | split('.') }}"
+
+- name: 'Generate variables with Python version'
+  ansible.builtin.set_fact:
+    aap_controller_python_version:
+      major: "{{ aap_controller_python_version_list[0] }}"
+      minor: "{{ aap_controller_python_version_list[1] }}"
+      micro: "{{ aap_controller_python_version_list[2] }}"
+  when: aap_controller_python_version is undefined
+
+- name: 'Ensure dependencies for local controller'
+  ansible.builtin.pip:
+    name:
+      - 'pytz'
+      - 'dateutils'
+    state: 'present'
+    executable: "/usr/bin/pip{{ aap_controller_python_version['major'] + '.' + aap_controller_python_version['minor'] }}"
 
 - name: 'Upload or refresh manifest to Automation Controller'
   when: aap_controller_rh_subscription_manifest | length > 0

@@ -8,9 +8,9 @@ This role requires the following in order to work
   * A Red Hat subscription manifest with AAP licenses
   * Administrative access to Automation Platform Controller
 
-Tested with Ansible 2.14 and higher
+Tested with Ansible 2.16 and higher
 
-This role supports Red Hat Automation Controller 4.4.6 and up. Has not been verified against AWX.
+This role supports Red Hat Automation Controller 4.5.2 and up. Has not been verified against AWX.
 
 # Scheduling jobs
 Apart from configuring most AAP aspects rather straigthforward, this role supports scheduling
