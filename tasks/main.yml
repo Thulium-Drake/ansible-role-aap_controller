@@ -29,6 +29,7 @@
       - 'dateutils'
     state: 'present'
     executable: "/usr/bin/pip{{ aap_controller_python_version['major'] + '.' + aap_controller_python_version['minor'] }}"
+  delegate_to: 'localhost'
 
 - name: 'Upload or refresh manifest to Automation Controller'
   when: aap_controller_rh_subscription_manifest | length > 0
