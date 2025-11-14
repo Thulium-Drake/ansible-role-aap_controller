@@ -3,7 +3,8 @@
 - name: 'Ensure job schedules'
   awx.awx.schedule:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "Schedule {{ schedule[0]['name'] }}"

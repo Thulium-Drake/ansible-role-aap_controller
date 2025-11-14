@@ -6,11 +6,25 @@ This role requires the following in order to work
 
   * 'awx.awx' 23.2.0 or higher
   * A Red Hat subscription manifest with AAP licenses
-  * Administrative access to Automation Platform Controller
+  * Administrative access to Automation Platform Controller, either via a password or a OAuth2 token on the user
 
 Tested with Ansible 2.16 and higher
 
 This role supports Red Hat Automation Controller 4.5.2 and up. Has not been verified against AWX.
+
+# Controlling role execution
+In order to run partial configuration, you can use the following tags:
+
+  * aap_controller_subscription
+  * aap_controller_organizations
+  * aap_controller_settings
+  * aap_controller_credentials
+  * aap_controller_execution_environments
+  * aap_controller_projects
+  * aap_controller_inventories
+  * aap_controller_job_templates
+
+This will allow greater control on what aspects of AAP you want to configure at any time.
 
 # Scheduling jobs
 Apart from configuring most AAP aspects rather straigthforward, this role supports scheduling

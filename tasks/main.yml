@@ -9,10 +9,14 @@
   delegate_to: 'localhost'
   register: 'aap_controller_python_version_raw'
   changed_when: false
+  tags:
+    - 'always'
 
 - name: 'Generate variables with Python version'
   ansible.builtin.set_fact:
     aap_controller_python_version_list: "{{ aap_controller_python_version_raw['stdout'] | split('.') }}"
+  tags:
+    - 'always'
 
 - name: 'Generate variables with Python version'
   ansible.builtin.set_fact:
@@ -21,6 +25,8 @@
       minor: "{{ aap_controller_python_version_list[1] }}"
       micro: "{{ aap_controller_python_version_list[2] }}"
   when: aap_controller_python_version is undefined
+  tags:
+    - 'always'
 
 - name: 'Ensure dependencies for local controller'
   ansible.builtin.pip:
@@ -30,6 +36,8 @@
     state: 'present'
     executable: "/usr/bin/pip{{ aap_controller_python_version['major'] + '.' + aap_controller_python_version['minor'] }}"
   delegate_to: 'localhost'
+  tags:
+    - 'always'
 
 - name: 'Upload or refresh manifest to Automation Controller'
   when: aap_controller_rh_subscription_manifest | length > 0
@@ -40,16 +48,21 @@
         dest: '/root/aap-manifest.zip'
         mode: '0600'
       register: 'aap_controller_upload_subscriptions'
+      tags:
+        - 'aap_controller_subscription'
 
     - name: 'Upload manifest'
       awx.awx.license:
         controller_username: "{{ aap_controller_admin_user }}"
-        controller_password: "{{ aap_controller_admin_password }}"
+        controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+        controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
         controller_host: "{{ aap_controller_host }}"
         validate_certs: "{{ aap_controller_validate_certs }}"
         manifest: '/root/aap-manifest.zip'
         force: true
       when: aap_controller_rh_subscription_force_manifest_refresh or aap_controller_upload_subscriptions['changed']
+      tags:
+        - 'aap_controller_subscription'
 
 - name: 'Configure subscription with Pool ID'
   when: aap_controller_rh_subscription_pool_id | length > 0
@@ -57,16 +70,20 @@
     - name: 'Refresh manifest'
       awx.awx.license:
         controller_username: "{{ aap_controller_admin_user }}"
-        controller_password: "{{ aap_controller_admin_password }}"
+        controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+        controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
         controller_host: "{{ aap_controller_host }}"
         validate_certs: "{{ aap_controller_validate_certs }}"
         pool_id: "{{ aap_controller_rh_subscription_pool_id }}"
         force: "{{ aap_controller_rh_subscription_force_manifest_refresh }}"
+      tags:
+        - 'aap_controller_subscription'
 
 - name: 'Ensure Organizations'
   awx.awx.organization:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ organization['name'] }}"
@@ -81,21 +98,27 @@
   loop: "{{ aap_controller_organizations }}"
   loop_control:
     loop_var: 'organization'
+  tags:
+    - 'aap_controller_organizations'
 
 - name: 'Ensure Settings'
   when: aap_controller_settings | length > 0
   awx.awx.settings:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     settings: "{{ aap_controller_settings }}"
   no_log: "{{ not aap_controller_debug }}"
+  tags:
+    - 'aap_controller_settings'
 
 - name: 'Ensure Credentials'
   awx.awx.credential:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ credential['name'] }}"
@@ -111,11 +134,14 @@
   loop_control:
     loop_var: 'credential'
   no_log: "{{ not aap_controller_debug }}"
+  tags:
+    - 'aap_controller_credentials'
 
 - name: 'Ensure Organization credentials'
   awx.awx.organization:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ organization['name'] }}"
@@ -123,11 +149,15 @@
   loop: "{{ aap_controller_organizations }}"
   loop_control:
     loop_var: 'organization'
+  tags:
+    - 'aap_controller_credentials'
+    - 'aap_controller_organizations'
 
 - name: 'Ensure Execution Environments'
   awx.awx.execution_environment:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ ee['name'] }}"
@@ -139,11 +169,14 @@
   loop: "{{ aap_controller_execution_environments }}"
   loop_control:
     loop_var: 'ee'
+  tags:
+    - 'aap_controller_execution_environments'
 
 - name: 'Ensure projects'
   awx.awx.project:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ project['name'] }}"
@@ -172,11 +205,14 @@
   loop: "{{ aap_controller_projects }}"
   loop_control:
     loop_var: 'project'
+  tags:
+    - 'aap_controller_projects'
 
 - name: 'Ensure projects updated from SCM'
   awx.awx.project_update:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ project['name'] }}"
@@ -185,11 +221,14 @@
   loop: "{{ aap_controller_projects }}"
   loop_control:
     loop_var: 'project'
+  tags:
+    - 'aap_controller_projects'
 
 - name: 'Ensure Inventories'
   awx.awx.inventory:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ inventory['name'] }}"
@@ -205,11 +244,14 @@
   loop: "{{ aap_controller_inventories }}"
   loop_control:
     loop_var: 'inventory'
+  tags:
+    - 'aap_controller_inventories'
 
 - name: 'Ensure Inventory sources'
   awx.awx.inventory_source:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ (inventory_source[0]['kind'] | default('') == 'constructed') | ternary('Auto-created source for: ' + inventory_source[0]['name'], inventory_source[1]['name']) }}"
@@ -239,11 +281,14 @@
   loop: "{{ aap_controller_inventories | subelements('sources', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'inventory_source'
+  tags:
+    - 'aap_controller_inventories'
 
 - name: 'Ensure job templates'
   awx.awx.job_template:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ job['name'] }}"
@@ -302,11 +347,14 @@
   loop: "{{ aap_controller_job_templates }}"
   loop_control:
     loop_var: 'job'
+  tags:
+    - 'aap_controller_job_templates'
 
 - name: 'Ensure workflow job templates'
   awx.awx.workflow_job_template:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ workflow['name'] }}"
@@ -341,6 +389,8 @@
   loop: "{{ aap_controller_workflow_templates }}"
   loop_control:
     loop_var: 'workflow'
+  tags:
+    - 'aap_controller_job_templates'
 
 - name: 'Ensure job schedules'
   ansible.builtin.include_tasks:
@@ -348,6 +398,8 @@
   loop: "{{ aap_controller_job_templates | subelements('schedules', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'schedule'
+  tags:
+    - 'aap_controller_job_templates'
 
 - name: 'Ensure workflow schedules'
   ansible.builtin.include_tasks:
@@ -355,11 +407,14 @@
   loop: "{{ aap_controller_workflow_templates | subelements('schedules', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'schedule'
+  tags:
+    - 'aap_controller_job_templates'
 
 - name: 'Ensure teams'
   awx.awx.team:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ team['name'] }}"
@@ -369,11 +424,14 @@
   loop: "{{ aap_controller_teams }}"
   loop_control:
     loop_var: 'team'
+  tags:
+    - 'aap_controller_organizations'
 
 - name: 'Ensure team roles'
   awx.awx.role:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     credentials: "{{ team_role['credentials'] | default(omit) }}"
@@ -390,3 +448,5 @@
   loop: "{{ aap_controller_teams }}"
   loop_control:
     loop_var: 'team_role'
+  tags:
+    - 'aap_controller_organizations'
