@@ -54,8 +54,8 @@
     - name: 'Upload manifest'
       awx.awx.license:
         controller_username: "{{ aap_controller_admin_user }}"
-        controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-        controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+        controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+        controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
         controller_host: "{{ aap_controller_host }}"
         validate_certs: "{{ aap_controller_validate_certs }}"
         manifest: '/root/aap-manifest.zip'
@@ -70,8 +70,8 @@
     - name: 'Refresh manifest'
       awx.awx.license:
         controller_username: "{{ aap_controller_admin_user }}"
-        controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-        controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+        controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+        controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
         controller_host: "{{ aap_controller_host }}"
         validate_certs: "{{ aap_controller_validate_certs }}"
         pool_id: "{{ aap_controller_rh_subscription_pool_id }}"
@@ -82,8 +82,8 @@
 - name: 'Ensure Organizations'
   awx.awx.organization:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ organization['name'] }}"
@@ -105,8 +105,8 @@
   when: aap_controller_settings | length > 0
   awx.awx.settings:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     settings: "{{ aap_controller_settings }}"
@@ -117,8 +117,8 @@
 - name: 'Ensure Credentials'
   awx.awx.credential:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ credential['name'] }}"
@@ -140,8 +140,8 @@
 - name: 'Ensure Organization credentials'
   awx.awx.organization:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ organization['name'] }}"
@@ -156,8 +156,8 @@
 - name: 'Ensure Execution Environments'
   awx.awx.execution_environment:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ ee['name'] }}"
@@ -175,8 +175,8 @@
 - name: 'Ensure projects'
   awx.awx.project:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ project['name'] }}"
@@ -211,8 +211,8 @@
 - name: 'Ensure projects updated from SCM'
   awx.awx.project_update:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ project['name'] }}"
@@ -227,8 +227,8 @@
 - name: 'Ensure Inventories'
   awx.awx.inventory:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ inventory['name'] }}"
@@ -250,8 +250,8 @@
 - name: 'Ensure Inventory sources'
   awx.awx.inventory_source:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ (inventory_source[0]['kind'] | default('') == 'constructed') | ternary('Auto-created source for: ' + inventory_source[0]['name'], inventory_source[1]['name']) }}"
@@ -287,8 +287,8 @@
 - name: 'Ensure job templates'
   awx.awx.job_template:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ job['name'] }}"
@@ -353,8 +353,8 @@
 - name: 'Ensure workflow job templates'
   awx.awx.workflow_job_template:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ workflow['name'] }}"
@@ -413,8 +413,8 @@
 - name: 'Ensure teams'
   awx.awx.team:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ team['name'] }}"
@@ -430,8 +430,8 @@
 - name: 'Ensure team roles'
   awx.awx.role:
     controller_username: "{{ aap_controller_admin_user }}"
-    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit) }}"
-    controller_password: "{{ aap_controller_admin_password | default(omit) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
     controller_host: "{{ aap_controller_host }}"
     validate_certs: "{{ aap_controller_validate_certs }}"
     credentials: "{{ team_role['credentials'] | default(omit) }}"

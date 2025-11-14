@@ -1,7 +1,8 @@
 ---
 # AAP controller login credentials
 aap_controller_admin_user: 'admin'
-aap_controller_admin_password: 'AutomateTheGalaxyAndBeyond!'
+aap_controller_admin_password: ''
+aap_controller_admin_oauthtoken: ''
 aap_controller_host: 'localhost'
 aap_controller_validate_certs: true
 
