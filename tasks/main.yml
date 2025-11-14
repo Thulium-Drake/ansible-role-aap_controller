@@ -114,6 +114,26 @@
   tags:
     - 'aap_controller_settings'
 
+- name: 'Ensure Credential Types'
+  awx.awx.credential_type:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    name: "{{ credential_type['name'] }}"
+    description: "{{ credential_type['description'] | default(omit) }}"
+    inputs: "{{ credential_type['inputs'] | default(omit) }}"
+    injectors: "{{ credential_type['injectors'] | default(omit) }}"
+    kind: "{{ credential_type['kind'] | default(omit) }}"
+    state: 'present'
+  loop: "{{ aap_controller_credentials }}"
+  loop_control:
+    loop_var: 'credential_type'
+  no_log: "{{ not aap_controller_debug }}"
+  tags:
+    - 'aap_controller_credentials'
+
 - name: 'Ensure Credentials'
   awx.awx.credential:
     controller_username: "{{ aap_controller_admin_user }}"

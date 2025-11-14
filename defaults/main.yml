@@ -49,6 +49,21 @@ aap_controller_organizations: []
 # For a full list of options, please see the awx.awx.role documentation
 aap_controller_teams: []
 
+# Credential types to configure
+# - name: 'JSON'
+#   description: 'JSON data'
+#   inputs:
+#     fields:
+#       - id: 'json_data'
+#         type: 'string'
+#         label: 'JSON data'
+#   injectors:
+#     extra_vars:
+#       json_data: "{% raw %}{{ '{{ json_data }}' }}{% endraw %}"
+#
+# The notation above is required to properly escape the Jinja template
+aap_controller_credential_types: []
+
 # Credentials to configure
 # - name: 'Example-GitDeployKey'
 #   type: 'Source Control'
