@@ -127,7 +127,7 @@
     injectors: "{{ credential_type['injectors'] | default(omit) }}"
     kind: "{{ credential_type['kind'] | default(omit) }}"
     state: 'present'
-  loop: "{{ aap_controller_credentials }}"
+  loop: "{{ aap_controller_credential_types }}"
   loop_control:
     loop_var: 'credential_type'
   no_log: "{{ not aap_controller_debug }}"
