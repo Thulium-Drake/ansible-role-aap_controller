@@ -95,6 +95,7 @@
     notification_templates_error: "{{ organization['notification_templates_error'] | default(omit) }}"
     notification_templates_started: "{{ organization['notification_templates_started'] | default(omit) }}"
     notification_templates_success: "{{ organization['notification_templates_success'] | default(omit) }}"
+    state: "{{ organization['state'] | default('present') }}"
   loop: "{{ aap_controller_organizations }}"
   loop_control:
     loop_var: 'organization'
@@ -126,7 +127,7 @@
     inputs: "{{ credential_type['inputs'] | default(omit) }}"
     injectors: "{{ credential_type['injectors'] | default(omit) }}"
     kind: "{{ credential_type['kind'] | default(omit) }}"
-    state: 'present'
+    state: "{{ credential_type['state'] | default('present') }}"
   loop: "{{ aap_controller_credential_types }}"
   loop_control:
     loop_var: 'credential_type'
@@ -149,7 +150,7 @@
     team: "{{ credential['team'] | default(omit) }}"
     user: "{{ credential['user'] | default(omit) }}"
     update_secrets: "{{ credential['update_secrets'] | default(omit) }}"
-    state: 'present'
+    state: "{{ credential['state'] | default('present') }}"
   loop: "{{ aap_controller_credentials }}"
   loop_control:
     loop_var: 'credential'
@@ -166,6 +167,7 @@
     validate_certs: "{{ aap_controller_validate_certs }}"
     name: "{{ organization['name'] }}"
     galaxy_credentials: "{{ organization['galaxy_credentials'] | default(omit) }}"
+    state: "{{ organization['state'] | default('present') }}"
   loop: "{{ aap_controller_organizations }}"
   loop_control:
     loop_var: 'organization'
@@ -186,6 +188,7 @@
     image: "{{ ee['image'] }}"
     organization: "{{ ee['organization'] | default(omit) }}"
     pull: "{{ ee['pull'] | default(omit) }}"
+    state: "{{ ee['state'] | default('present') }}"
   loop: "{{ aap_controller_execution_environments }}"
   loop_control:
     loop_var: 'ee'
@@ -221,7 +224,7 @@
     scm_url: "{{ project['scm_url'] | default(omit) }}"
     scm_refspec: "{{ project['scm_refspec'] | default(omit) }}"
     scm_branch: "{{ project['scm_branch'] | default(omit) }}"
-    state: 'present'
+    state: "{{ project['state'] | default('present') }}"
   loop: "{{ aap_controller_projects }}"
   loop_control:
     loop_var: 'project'
@@ -239,6 +242,7 @@
     organization: "{{ project['organization'] }}"
     wait: true
   loop: "{{ aap_controller_projects }}"
+  when: project['state'] == 'present'
   loop_control:
     loop_var: 'project'
   tags:
@@ -260,7 +264,7 @@
     organization: "{{ inventory['organization'] }}"
     prevent_instance_group_fallback: "{{ inventory['prevent_instance_group_fallback'] | default(omit) }}"
     variables: "{{ inventory['variables'] | default(omit) }}"
-    state: 'present'
+    state: "{{ inventory['state'] | default('present') }}"
   loop: "{{ aap_controller_inventories }}"
   loop_control:
     loop_var: 'inventory'
@@ -298,6 +302,7 @@
     update_cache_timeout: "{{ inventory_source[1]['update_cache_timeout'] | default(omit) }}"
     update_on_launch: "{{ inventory_source[1]['update_on_launch'] | default(omit) }}"
     verbosity: "{{ inventory_source[1]['verbosity'] | default(omit) }}"
+    state: "{{ inventory_source[1]['state'] | default('present') }}"
   loop: "{{ aap_controller_inventories | subelements('sources', {'skip_missing': true}) }}"
   loop_control:
     loop_var: 'inventory_source'
@@ -406,6 +411,7 @@
     webhook_credential: "{{ workflow['webhook_credential'] | default(omit) }}"
     webhook_service: "{{ workflow['webhook_service'] | default(omit) }}"
     workflow_nodes: "{{ workflow['workflow_nodes'] | default(omit) }}"
+    state: "{{ workflow['state'] | default('present') }}"
   loop: "{{ aap_controller_workflow_templates }}"
   loop_control:
     loop_var: 'workflow'
@@ -440,7 +446,7 @@
     name: "{{ team['name'] }}"
     description: "{{ team['description'] }}"
     organization: "{{ team['organization'] }}"
-    state: 'present'
+    state: "{{ team['state'] | default('present') }}"
   loop: "{{ aap_controller_teams }}"
   loop_control:
     loop_var: 'team'
@@ -464,8 +470,8 @@
     teams:
       - "{{ team_role['name'] | default(omit) }}"
     workflows: "{{ team_role['workflows'] | default(omit) }}"
-    state: 'present'
   loop: "{{ aap_controller_teams }}"
+  when: team_role['state'] == 'present'
   loop_control:
     loop_var: 'team_role'
   tags:
