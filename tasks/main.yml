@@ -459,7 +459,7 @@
     inventories: "{{ team_role['inventories'] | default(omit) }}"
     job_templates: "{{ team_role['job_templates'] | default(omit) }}"
     organizations: "{{ team_role['organizations'] | default(omit) }}"
-    projects: "{{ team_role['project'] | default(omit) }}"
+    projects: "{{ team_role['projects'] | default(omit) }}"
     role: "{{ team_role['permissions'] }}"
     teams:
       - "{{ team_role['name'] | default(omit) }}"
