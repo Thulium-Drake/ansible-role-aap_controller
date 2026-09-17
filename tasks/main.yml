@@ -304,6 +304,25 @@
   tags:
     - 'aap_controller_inventories'
 
+- name: 'Ensure Inventory hosts'
+  awx.awx.host:
+    controller_username: "{{ aap_controller_admin_user }}"
+    controller_password: "{{ aap_controller_admin_password | default(omit, true) }}"
+    controller_oauthtoken: "{{ aap_controller_admin_oauthtoken | default(omit, true) }}"
+    controller_host: "{{ aap_controller_host }}"
+    validate_certs: "{{ aap_controller_validate_certs }}"
+    inventory: "{{ inventory_host[0]['name'] | default(omit) }}"
+    name: "{{ inventory_host[1]['name'] }}"
+    description: "{{ inventory_host[1]['description'] | default(omit) }}"
+    enabled: "{{ inventory_host[1]['enabled'] | default(omit) }}"
+    variables: "{{ inventory_host[1]['variables'] | default(omit) }}"
+  loop: "{{ aap_controller_inventories | subelements('hosts', {'skip_missing': true}) }}"
+  loop_control:
+    loop_var: 'inventory_host'
+  tags:
+    - 'aap_controller_inventories'
+
+
 - name: 'Ensure job templates'
   awx.awx.job_template:
     controller_username: "{{ aap_controller_admin_user }}"

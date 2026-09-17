@@ -117,6 +117,10 @@ aap_controller_execution_environments: []
 #       - 'Hosts'
 #     sources:
 #       - source_vars: "{{ lookup('file', inventory_dir + '/constructed.yml') | from_yaml }}"
+#     hosts:
+#       - name: 'my-special-host.example.com'
+#         variables:
+#           is_special: true
 #
 # For a full list of options, please see the awx.awx.inventory and inventory_source documentation
 aap_controller_inventories: []
